@@ -1,5 +1,7 @@
+from collections import Counter
+
 class Article:
-    all = []  # Class variable to track all articles
+    all = []  
 
     def __init__(self, author, magazine, title):
         self.author = author
@@ -71,12 +73,14 @@ class Author:
         return list({article.magazine for article in self._articles})
 
     def add_article(self, magazine, title):
+        """Creates and returns a new Article associated with this author and magazine"""
         return Article(self, magazine, title)
 
     def topic_areas(self):
+        """Returns unique magazine categories or None if no articles"""
         if not self._articles:
             return None
-        return list({mag.category for mag in self.magazines()})
+        return list({magazine.category for magazine in self.magazines()})
 
 
 class Magazine:
@@ -113,17 +117,19 @@ class Magazine:
         return self._articles
 
     def contributors(self):
+        """Returns unique list of authors who have written for this magazine"""
         return list({article.author for article in self._articles})
 
     def article_titles(self):
+        """Returns list of article titles or None if no articles"""
         if not self._articles:
             return None
         return [article.title for article in self._articles]
 
     def contributing_authors(self):
-        author_counts = {}
-        for article in self._articles:
-            author = article.author
-            author_counts[author] = author_counts.get(author, 0) + 1
-        contributing_authors = [author for author, count in author_counts.items() if count > 2]
-        return contributing_authors if contributing_authors else None
+        """Returns authors with >2 articles or None if none exist"""
+        if not self._articles:
+            return None
+        author_counts = Counter(article.author for article in self._articles)
+        result = [author for author, count in author_counts.items() if count > 2]
+        return result if result else None
